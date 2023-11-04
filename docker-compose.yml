@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  datastore-emulator:
+    container_name: datastore-emulator
+    image: google/cloud-sdk:latest
+    command: gcloud beta emulators datastore start --no-store-on-disk --project=my-go-api --host-port=0.0.0.0:8081
+    ports:
+      - "8081:8081"
+
+  my-go-api:
+    build: .
+    container_name: my-go-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - datastore-emulator
+    environment:
+      - DATASTORE_EMULATOR_HOST=datastore-emulator:8081
+      - DATASTORE_PROJECT_ID=my-go-api
